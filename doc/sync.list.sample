@@ -1,2 +1,4 @@
-~/Desktop		= 1drv:/Desktop
-~/Documents		= 1drv:/Documents
+SyncId       ; LocalDir     ; RemoteDir       ; FirstSync
+1drvdesktop  ; ~/Desktop    ; 1drv:/Desktop   ; yes
+1drvdocs     ; ~/Documents  ; 1drv:/Documents ; yes
+gdrvdocs     ; ~/Documents  ; 1drv:/Documents ; no

@@ -1,7 +1,7 @@
 #
 #
 
-function getSyncList
+function loadSyncList
 {
     declare -g -A SyncList
     decalre -g -i SyncListSize=0
@@ -9,11 +9,14 @@ function getSyncList
     [ ! -f "$_CONF_DIR_/sync.list" ] && touch "$_CONF_DIR_/sync.list"
     
     while read -r _LINE_; do
-        LocalDir="$(echo $_LINE_ | cut -f 1 -d '=' | xargs)"
-        RemoteDir="$(echo $_LINE_ | cut -f 2 -d '=' | xargs)"
+        
+        SyncId="$(echo $_LINE_ | cut -f 1 -d '=' | xargs)"
+        LocalDir="$(echo $_LINE_ | cut -f 2 -d '=' | xargs)"
+        RemoteDir="$(echo $_LINE_ | cut -f 3 -d '=' | xargs)"
 
-        SyncList[$SyncListSize,0]=$LocalDir
-        SyncList[$SyncListSyze,1]=$RemoteDir
+        SyncList[$SyncListSize,1]=$SyncId
+        SyncList[$SyncListSize,2]=$LocalDir
+        SyncList[$SyncListSyze,3]=$RemoteDir
 
         let SyncListSize++
     done < $_CONF_DIR_/sync.list
@@ -23,19 +26,23 @@ function syncDirs
 {
     for ((i=0; i < SyncListSize; i++))
     do
-        syncDir ${SyncList[$i,0]} ${SyncList[$i,1]}
+        syncDirByIndex $i
     done
 }
 
-function syncDir
-{
-    local LocalDir=$1
-    local RemoteDir=$2
+function syncDir {
+    local SyncId=$1
 
-    # TODO: Check first time
-    # TODO: Error threatment
-    #
-    # rclone bisync "$LocalDir" "$RemoteDir" --verbose --filters-file $_CONF_DIR_/filter.txt --resync --resync-mode newer
+    for ((i=0; i < SyncListSize; i++))
+    do
+        if [ $i == $SyncId ]; then
+           syncDirByIndex $i
+
+           break;
+        fi
+    done
+
+    #TODO: find index and pass to syncDirByIndex
 }
 
 function addDirs2Sync
