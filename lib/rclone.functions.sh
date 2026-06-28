@@ -10,19 +10,35 @@ function getRcloneConf {
     done < "$(rclone config show | egrep '^\[.+\}$')"
 }
 
-function syncDirByIndex
+function sync
 {
-    local Idx=$1
-    local SyncId=${SyncList[$Idx, $1]}
-    local LocalDir=${SyncList[$Idx, $2]}
-    local RemoteDir=${SyncList[$Idx, $3]}
+    local LocalDir=${SyncList[$Idx, $1]}
+    local RemoteDir=${SyncList[$Idx, $2]}
+    # param ReSync
+    #       None: Normal Sync
+    #       First: First time syncing 
+    #       Err: resync for error 
+    local ReSync=$3
 
-    # TODO: Check first time
-    # TODO: Error threatment
-    #
+    case "$ReSync" in
+        'First')
+            ReSyncOpt='--resync --resync-mode path2'
+            ;;
+        'Err')
+            ReSyncOpt='--resync --resync-mode newer' 
+            ;;
+        *)
+            ReSyncOpt=''
+            ;;
+    esac
 
     rclone bisync "$LocalDir" "$RemoteDir" \
         --verbose \
-        --filters-file $_CONF_DIR_/filter.txt # --resync --resync-mode newer
+        --filters-file $_CONF_DIR_/filter.txt \
+        $ReSyncOpt
+
+    local -i _err_code_=$?
+
+    return $_err_code_
 }
 
