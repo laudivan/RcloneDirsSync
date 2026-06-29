@@ -1,16 +1,14 @@
 #
 #
+declare _CONF_DIR_="${HOME}/.config/rclonedirsync"
 
 function init {
-    declare _CONF_DIR_="${HOME}/.config/rclonedirsync"
-
     [ ! -d "${_CONF_DIR_}" ] && mkdir -p "${_CONF_DIR_}"
 
     [ ! -f "${_CONF_DIR_}/filter.txt" ] && \
         cp "${_APP_DIR_}/doc/filter.txt.template" "${_CONF_DIR_}/filter.txt"
 
-    [ ! -f "${_CONF_DIR_}/sync.list" ] && touch "${_CONF_DIR_}/sync.list"
-
+    [ ! -f "${_CONF_DIR_}/sync.list" ] && createSyncListFile
 }
 
 function showHeader {

@@ -10,8 +10,7 @@ function getRcloneConf {
     done < "$(rclone config show | egrep '^\[.+\}$')"
 }
 
-function sync
-{
+function sync {
     local LocalDir=${SyncList[$Idx, $1]}
     local RemoteDir=${SyncList[$Idx, $2]}
     # param ReSync
@@ -37,8 +36,5 @@ function sync
         --filters-file $_CONF_DIR_/filter.txt \
         $ReSyncOpt
 
-    local -i _err_code_=$?
-
-    return $_err_code_
+    return $?
 }
-
